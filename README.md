@@ -1,43 +1,58 @@
 [![Part of the Claude Code Repos Index](https://img.shields.io/badge/Claude%20Code%20Repos-Index-blue?style=flat-square&logo=github)](https://github.com/danielrosehill/Claude-Code-Repos-Index)
 
-# Claude-Repo-Retrofitter
+# Claude Code Retrofitter
 
-Batch-retrofit existing repositories with Claude Code scaffolding (CLAUDE.md, AGENTS.md, slash commands, subagents, and project folders).
+Bulk-retrofit existing repositories with AI agent scaffolding files. Designed for batch operations across large collections of repos — scan hundreds of repositories at once, identify which are missing scaffolding, and retrofit them in a single session.
 
-## Usage
+While the scaffolding files use Claude Code conventions (CLAUDE.md, `.claude/commands/`, `.claude/agents/`), the patterns and folder structures are adaptable to other agentic coding frameworks and AI-assisted development workflows.
 
-### 1. Scan your repos
+## How To Use
 
-Run the scan script to identify which repositories are missing Claude elements:
+1. **Clone this repo** to your local machine:
 
 ```bash
-./scan-repos.sh ~/repos/github
+git clone https://github.com/danielrosehill/Claude-Repo-Retrofitter.git
+cd Claude-Repo-Retrofitter
 ```
 
-This generates a report in `./reports/` with categorized lists and a summary.
+2. **Open it in Claude Code** (or your preferred agentic CLI):
 
-### 2. Use the slash commands
+```bash
+claude
+```
 
-From within this repo in Claude Code:
+3. **Run the scan slash command** to survey your repositories:
 
-- `/scan ~/repos/github` - Scan repos, view the report, and select which to retrofit
-- `/retrofit /path/to/repo1 /path/to/repo2` - Retrofit specific repositories
+```
+/scan ~/repos/github
+```
 
-### What gets added
+This scans every git repo under the given path, generates a CSV and summary report, and presents you with a breakdown of which repos are missing scaffolding. You then choose which repos to retrofit.
+
+4. **Or retrofit specific repos directly**:
+
+```
+/retrofit ~/repos/github/my-project ~/repos/github/another-project
+```
+
+The tool remembers your preferences (like your repo base path) in `config.json` so you don't need to re-enter them each session.
+
+## What Gets Added
 
 Each retrofitted repo receives:
 
-- **CLAUDE.md** - Top-level agent guidance file
-- **AGENTS.md** - Cross-framework agent reference
+- **CLAUDE.md** - Top-level agent guidance file with project context and conventions
+- **AGENTS.md** - Cross-framework agent reference (works beyond Claude Code)
 - **Scaffold folders** - `context-data/`, `planning/`, `pm/`, `from-ai/`, `user-docs/`
 - **Slash commands** - `.claude/commands/` with repo-appropriate commands
-- **Subagents** - `.claude/agents/` if beneficial for the repo
+- **Subagents** - `.claude/agents/` if beneficial for the repo type
 
-### Safety
+## Safety
 
 - Runs `git pull` before changes
 - Never modifies existing source code
-- Checks public/private visibility and asks before open-sourcing Claude files
+- Checks public/private visibility and asks before open-sourcing agent files
+- Stores user decisions in `config.json` to avoid repeated prompts
 
 ---
 

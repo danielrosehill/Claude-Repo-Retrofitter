@@ -1,0 +1,7 @@
+{
+  "repos_base_path": "",
+  "default_visibility_action": "",
+  "auto_push": false,
+  "skip_repos": [],
+  "notes": "This file stores user preferences across sessions. The agent will populate these fields as you use the tool, so you don't need to re-enter the same information each time."
+}

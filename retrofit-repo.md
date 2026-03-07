@@ -1,8 +1,8 @@
-Your task is to update a repository created by the user in order to add several files which are intended to streamline the repository structure for use with an AI agent.
+Your task is to update a repository in order to add several files which streamline the repository structure for use with AI coding agents.
 
 ## Important Constraints
 
-- **No code changes.** You must not modify any existing source code, configuration files, or application logic in the target repository. Your only purpose is to add Claude-specific scaffolding files (CLAUDE.md, AGENTS.md, folder structure, slash commands, subagents) and push them back up.
+- **No code changes.** You must not modify any existing source code, configuration files, or application logic in the target repository. Your only purpose is to add agent scaffolding files and push them back up.
 - **Safety pull.** Before making any changes, always run `git pull` in the target repository to ensure you are working on the latest version and avoid conflicts.
 
 ## Repository Visibility Check
@@ -10,12 +10,58 @@ Your task is to update a repository created by the user in order to add several 
 Before committing, determine whether the target repository is **public** or **private**:
 
 1. Check using: `gh repo view --json isPrivate --jq '.isPrivate'` (run from within the target repo).
-2. **If private**: Proceed normally. All files can be committed, including `.claude/` contents (agents, slash commands).
-3. **If public**: Ask the user whether they want the Claude-specific files (`.claude/agents/`, `.claude/commands/`, `CLAUDE.md`, `AGENTS.md`) to be committed and open-sourced. If the user declines:
+2. **If private**: Proceed normally. All files can be committed.
+3. **If public**: Check `config.json` for a stored preference. If none, ask the user whether they want agent-specific files (`.claude/agents/`, `.claude/commands/`, `CLAUDE.md`, `AGENTS.md`) to be committed and open-sourced. If the user declines:
    - Add `.claude/` to `.gitignore`
    - Add `CLAUDE.md` and `AGENTS.md` to `.gitignore`
    - The scaffold folders (`context-data/`, `planning/`, `pm/`, `from-ai/`, `user-docs/`) can still be committed as they are general-purpose.
 
-## Execution
+## Scaffolding to Add
 
-Work through the task files in `tasks/` in numerical order (1.md, 2.md, 3.md, 4.md). Each task file contains specific instructions for one phase of the retrofit.
+### 1. Agent Guidance Files
+
+Create these files in the target repository root:
+
+**CLAUDE.md** — The primary agent guidance file. Should contain:
+- Project overview and purpose (derived from existing README or code)
+- Tech stack and key dependencies
+- Build, test, and lint commands
+- Code conventions and patterns used in the repo
+- Any repo-specific constraints
+
+**AGENTS.md** — A cross-framework agent reference. Should contain:
+- Repository structure overview
+- Key entry points and architecture notes
+- Useful context for any AI agent working in the repo (not just Claude)
+
+### 2. Scaffold Folders
+
+Create these directories (with `.gitkeep` files so they're tracked):
+
+- `context-data/` — Background information, research, reference material
+- `planning/` — Project plans, roadmaps, design documents
+- `pm/` — Project management artifacts, status updates
+- `from-ai/` — AI-generated outputs, suggestions, analysis
+- `user-docs/` — User-facing documentation drafts
+
+If any of these folders already exist, skip them. If the repo already has equivalent directories (e.g. `docs/`), do not duplicate — just skip creating the overlap.
+
+### 3. Slash Commands
+
+Create `.claude/commands/` with markdown files appropriate for the repo type:
+
+- Analyze the repo's purpose, language, and structure
+- Create 2-4 relevant slash commands (e.g., `/review`, `/test`, `/deploy`, `/docs`)
+- Each command file should contain clear instructions for the agent
+
+### 4. Subagents
+
+If the repository would benefit from specialized agents, create `.claude/agents/` with markdown files defining them. Not every repo needs subagents — only add them when there's a clear use case (e.g., a monorepo with distinct subsystems, a project with separate frontend/backend concerns).
+
+## Commit
+
+After adding all scaffolding:
+
+1. Stage all new files (respecting any `.gitignore` decisions).
+2. Commit with the message: `Add AI agent scaffolding (retrofitted)`
+3. Push to the remote.
