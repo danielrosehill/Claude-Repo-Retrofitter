@@ -1,3 +1,5 @@
+[![Part of the Claude Code Repos Index](https://img.shields.io/badge/Claude%20Code%20Repos-Index-blue?style=flat-square&logo=github)](https://github.com/danielrosehill/Claude-Code-Repos-Index)
+
 # Claude-Repo-Retrofitter
 
 Batch-retrofit existing repositories with Claude Code scaffolding (CLAUDE.md, AGENTS.md, slash commands, subagents, and project folders).
@@ -36,3 +38,7 @@ Each retrofitted repo receives:
 - Runs `git pull` before changes
 - Never modifies existing source code
 - Checks public/private visibility and asks before open-sourcing Claude files
+
+---
+
+For more Claude Code projects, visit [my index](https://github.com/danielrosehill/Claude-Code-Repos-Index).
