@@ -4,7 +4,8 @@ The user will provide the base path containing their repositories. For example: 
 
 ## Before Starting
 
-Check `config.json` in this repository's root. If `repos_base_path` is set and the user didn't provide a path, use that stored path instead of asking.
+1. Check `config.json` in this repository's root. If `repos_base_path` is set and the user didn't provide a path, use that stored path instead of asking.
+2. Read `scan-log.json` for previously visited repos.
 
 ## Steps
 
@@ -20,11 +21,13 @@ Check `config.json` in this repository's root. If `repos_base_path` is set and t
    - Repos missing all elements (best candidates for a full retrofit)
    - Repos partially scaffolded (may need selective updates)
    - Repos already fully scaffolded (no action needed)
+   - Repos already visited in previous runs (from `scan-log.json`) — show these separately so the user knows they can be skipped
 
 4. Ask the user which repos they would like to retrofit. They can choose:
    - All repos missing all elements
    - A specific subset by name
    - Only repos missing specific elements (e.g. just slash commands)
+   - Only repos not yet visited (exclude those in `scan-log.json`)
 
 5. If this is the first run and `repos_base_path` is empty in `config.json`, save the provided path there for future sessions.
 

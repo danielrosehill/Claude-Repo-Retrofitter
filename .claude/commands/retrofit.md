@@ -74,6 +74,20 @@ After completing all scaffolding tasks for a repository:
 2. Commit with the message: `Add AI agent scaffolding (retrofitted)`
 3. If `auto_push` is true in `config.json`, push automatically. Otherwise ask the user.
 
-### 8. Repeat
+### 8. Update Scan Log
 
-If multiple repository paths were provided, repeat steps 1-7 for each one. Report a summary at the end showing which repos were retrofitted, any that were skipped, and note that evaluation reports are available in `working-data/reports/`.
+After successfully retrofitting (or skipping) a repo, update `scan-log.json` in this repository's root with an entry for the repo:
+
+```json
+{
+  "status": "retrofitted",
+  "timestamp": "2026-03-08T12:00:00Z",
+  "visibility": "public|private|unknown"
+}
+```
+
+Create the file if it doesn't exist. This enables incremental runs — future scans will know this repo has already been processed.
+
+### 9. Repeat
+
+If multiple repository paths were provided, repeat steps 1-8 for each one. Report a summary at the end showing which repos were retrofitted, any that were skipped, and note that evaluation reports are available in `working-data/reports/`.

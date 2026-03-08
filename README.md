@@ -35,7 +35,15 @@ This scans every git repo under the given path, generates a CSV and summary repo
 /retrofit ~/repos/github/my-project ~/repos/github/another-project
 ```
 
-The tool remembers your preferences (like your repo base path) in `config.json` so you don't need to re-enter them each session.
+5. **Or run in fully autonomous mode**:
+
+```
+/auto ~/repos/github
+```
+
+In autonomous mode, the agent scans every repo, evaluates whether it's a good candidate for scaffolding (skipping forks, empty repos, already-scaffolded repos), retrofits suitable ones, and pushes — all without user interaction.
+
+The tool remembers your preferences (like your repo base path) in `config.json` and tracks which repos have already been processed in `scan-log.json`, so you can run incrementally without re-visiting repos.
 
 ## What Gets Added
 
@@ -52,12 +60,17 @@ Additionally, the retrofitter generates a **per-repo evaluation report** saved l
 - **MCP server recommendations** — existing public MCP servers that would complement the repo's tech stack and domain
 - **Custom admin MCP assessment** — whether building a lightweight project-specific MCP server would help streamline repo operations, and if so, what tools it should expose
 
+## Incremental Runs
+
+The `scan-log.json` file tracks every repo that has been processed, along with its status (`retrofitted`, `skipped`, `not_suitable`, `error`, `already_complete`). On subsequent runs, already-visited repos are skipped automatically. This makes it safe to run `/auto` or `/scan` repeatedly across a growing collection of repos.
+
 ## Safety
 
 - Runs `git pull` before changes
 - Never modifies existing source code
 - Checks public/private visibility and asks before open-sourcing agent files
 - Stores user decisions in `config.json` to avoid repeated prompts
+- Tracks visited repos in `scan-log.json` to avoid redundant work
 
 ---
 
