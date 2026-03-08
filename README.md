@@ -35,7 +35,15 @@ This scans every git repo under the given path, generates a CSV and summary repo
 /retrofit ~/repos/github/my-project ~/repos/github/another-project
 ```
 
-5. **Or run in fully autonomous mode**:
+5. **Or run in interactive mode** for guided, repo-by-repo approval:
+
+```
+/interactive ~/repos/github
+```
+
+In interactive mode, the agent scans and evaluates all repos silently, then presents each candidate one-by-one for your approval. You decide which repos to retrofit (y/n/q) or use batch shortcuts (all/none/review). Approved repos are then retrofitted in parallel by spawning worker agents.
+
+6. **Or run in fully autonomous mode**:
 
 ```
 /auto ~/repos/github
