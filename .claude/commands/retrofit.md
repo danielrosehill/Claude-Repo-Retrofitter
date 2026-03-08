@@ -44,16 +44,36 @@ gh repo view --json isPrivate --jq '.isPrivate'
 
 ### 5. Add Scaffolding
 
-Read and follow the instructions in `retrofit-repo.md` from this repository's root. Apply them to the **target repository**, not to this template repository.
+Read and follow the instructions in `retrofit-repo.md` from this repository's root. Apply them to the **target repository**, not to this template repository. This includes:
 
-### 6. Commit and Push
+- Agent guidance files (CLAUDE.md, AGENTS.md)
+- Scaffold folders
+- Slash commands
+- Subagents (if appropriate)
+- MCP server recommendations
+- Custom admin MCP evaluation
 
-After completing all tasks for a repository:
+### 6. Save Evaluation Report
+
+After completing the scaffolding and MCP evaluation, save a report to `working-data/reports/<repo-name>.md` in **this repository** (the Retrofitter repo, not the target). The report should contain:
+
+- Repository name and path
+- Date of evaluation
+- What scaffolding was added
+- Recommended MCP servers (with brief rationale for each, or "None" if nothing fits)
+- Custom admin MCP assessment (recommended or not, with reasoning; if yes, describe the 2-4 key tools it would expose)
+- Any other observations
+
+Create the `working-data/reports/` directory if it doesn't exist.
+
+### 7. Commit and Push (Target Repo)
+
+After completing all scaffolding tasks for a repository:
 
 1. Stage all new files (respect the `.gitignore` decisions from step 4).
 2. Commit with the message: `Add AI agent scaffolding (retrofitted)`
 3. If `auto_push` is true in `config.json`, push automatically. Otherwise ask the user.
 
-### 7. Repeat
+### 8. Repeat
 
-If multiple repository paths were provided, repeat steps 1-6 for each one. Report a summary at the end showing which repos were retrofitted and any that were skipped.
+If multiple repository paths were provided, repeat steps 1-7 for each one. Report a summary at the end showing which repos were retrofitted, any that were skipped, and note that evaluation reports are available in `working-data/reports/`.

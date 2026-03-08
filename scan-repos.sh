@@ -22,7 +22,7 @@ fi
 mkdir -p "$REPORT_DIR"
 
 # CSV header
-echo "repo,has_claude_md,has_commands,has_agents,status" > "$CSV_FILE"
+echo "repo,visibility,has_claude_md,has_commands,has_agents,status" > "$CSV_FILE"
 
 # Arrays for categorization
 missing_claude_md=()
@@ -30,6 +30,9 @@ missing_commands=()
 missing_agents=()
 missing_all=()
 has_all=()
+public_repos=()
+private_repos=()
+unknown_vis=()
 
 repo_count=0
 
@@ -39,6 +42,19 @@ for dir in "$REPOS_BASE"/*/; do
 
   repo_count=$((repo_count + 1))
   repo_name=$(basename "$dir")
+
+  # Determine public/private visibility via gh CLI
+  is_private=$(cd "$dir" && gh repo view --json isPrivate --jq '.isPrivate' 2>/dev/null || echo "unknown")
+  if [ "$is_private" = "true" ]; then
+    visibility="private"
+    private_repos+=("$repo_name")
+  elif [ "$is_private" = "false" ]; then
+    visibility="public"
+    public_repos+=("$repo_name")
+  else
+    visibility="unknown"
+    unknown_vis+=("$repo_name")
+  fi
 
   has_cm=false
   has_cmd=false
@@ -63,7 +79,7 @@ for dir in "$REPOS_BASE"/*/; do
   fi
 
   # Write CSV row
-  echo "${repo_name},${has_cm},${has_cmd},${has_agt},${status}" >> "$CSV_FILE"
+  echo "${repo_name},${visibility},${has_cm},${has_cmd},${has_agt},${status}" >> "$CSV_FILE"
 done
 
 # Write individual lists
@@ -81,7 +97,15 @@ cat > "$REPORT_DIR/summary.md" <<EOF
 **Date**: $(date '+%Y-%m-%d %H:%M:%S')
 **Total git repositories**: ${repo_count}
 
-## Summary
+## Visibility
+
+| Visibility | Count |
+|---|---|
+| Public | ${#public_repos[@]} |
+| Private | ${#private_repos[@]} |
+| Unknown | ${#unknown_vis[@]} |
+
+## Scaffolding Summary
 
 | Element | Repos Missing | Repos Present |
 |---|---|---|
@@ -104,6 +128,10 @@ EOF
 
 echo "Scan complete. ${repo_count} repos scanned."
 echo "Report saved to: ${REPORT_DIR}/"
+echo ""
+echo "  Public repos:             ${#public_repos[@]}"
+echo "  Private repos:            ${#private_repos[@]}"
+echo "  Unknown visibility:       ${#unknown_vis[@]}"
 echo ""
 echo "  Missing CLAUDE.md:        ${#missing_claude_md[@]}"
 echo "  Missing slash commands:   ${#missing_commands[@]}"

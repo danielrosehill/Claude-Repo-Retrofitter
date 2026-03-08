@@ -47,6 +47,11 @@ Each retrofitted repo receives:
 - **Slash commands** - `.claude/commands/` with repo-appropriate commands
 - **Subagents** - `.claude/agents/` if beneficial for the repo type
 
+Additionally, the retrofitter generates a **per-repo evaluation report** saved locally in `working-data/reports/<repo-name>.md`. Each report includes:
+
+- **MCP server recommendations** — existing public MCP servers that would complement the repo's tech stack and domain
+- **Custom admin MCP assessment** — whether building a lightweight project-specific MCP server would help streamline repo operations, and if so, what tools it should expose
+
 ## Safety
 
 - Runs `git pull` before changes

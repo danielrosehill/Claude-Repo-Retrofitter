@@ -58,6 +58,45 @@ Create `.claude/commands/` with markdown files appropriate for the repo type:
 
 If the repository would benefit from specialized agents, create `.claude/agents/` with markdown files defining them. Not every repo needs subagents — only add them when there's a clear use case (e.g., a monorepo with distinct subsystems, a project with separate frontend/backend concerns).
 
+### 5. MCP Server Recommendations
+
+Evaluate the repository and recommend MCP servers that would streamline working with it. Consider:
+
+- **The repo's tech stack** — e.g., a repo using PostgreSQL might benefit from a database MCP; a repo deploying to Vercel might benefit from the Vercel MCP.
+- **External services it integrates with** — APIs, cloud providers, CMS platforms, monitoring tools.
+- **The repo's domain** — e.g., a data pipeline repo might benefit from a filesystem or S3 MCP; a web app might benefit from a browser-testing MCP.
+
+Look for well-known, publicly available MCP servers. Don't force recommendations — if nothing is clearly useful, say so.
+
+### 6. Custom Admin MCP Evaluation
+
+Separately, evaluate whether the repository would benefit from a **lightweight custom MCP server** built specifically for managing or administering the project. This is a distinct question from recommending existing MCPs.
+
+A custom admin MCP makes sense when:
+- The repo has **repetitive operational tasks** (e.g., managing database migrations, rotating secrets, triggering deploys, checking service health).
+- There are **project-specific queries** an agent would frequently need (e.g., fetching the latest build status, listing open feature flags, querying a custom API).
+- The project involves **managing state or resources** that don't have good existing MCP coverage.
+
+A custom admin MCP does NOT make sense when:
+- The repo is a simple library or static site with no operational overhead.
+- Existing MCPs already cover the needs.
+- The operational tasks are rare or one-off.
+
+If a custom MCP is recommended, briefly describe what it would do (2-4 key tools/resources it would expose).
+
+### 7. Save Evaluation Report
+
+Save a per-repo evaluation report to `working-data/reports/<repo-name>.md` in the **Retrofitter repository** (not the target repo). This report should contain:
+
+- Repository name and path
+- Date of evaluation
+- Summary of what scaffolding was added
+- MCP server recommendations (from step 5)
+- Custom admin MCP evaluation (from step 6)
+- Any other observations about the repo's agent-readiness
+
+This report is for the user's future reference and is NOT committed to the target repo.
+
 ## Commit
 
 After adding all scaffolding:
