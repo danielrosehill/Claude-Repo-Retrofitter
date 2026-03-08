@@ -66,7 +66,17 @@ After completing the scaffolding and MCP evaluation, save a report to `working-d
 
 Create the `working-data/reports/` directory if it doesn't exist.
 
-### 7. Commit and Push (Target Repo)
+### 7. Append Retrofit Watermark
+
+Append a watermark line to the bottom of the target repo's README (e.g. `README.md`) so future scans can detect this repo was already processed — even from a different machine. Add a blank line then:
+
+```
+*Repository evaluated by retrofit agent on YYYY-MM-DD*
+```
+
+Use the current date. If no README exists, skip this step.
+
+### 8. Commit and Push (Target Repo)
 
 After completing all scaffolding tasks for a repository:
 
@@ -74,7 +84,7 @@ After completing all scaffolding tasks for a repository:
 2. Commit with the message: `Add AI agent scaffolding (retrofitted)`
 3. If `auto_push` is true in `config.json`, push automatically. Otherwise ask the user.
 
-### 8. Update Scan Log
+### 9. Update Scan Log
 
 After successfully retrofitting (or skipping) a repo, update `scan-log.json` in this repository's root with an entry for the repo:
 
@@ -88,6 +98,6 @@ After successfully retrofitting (or skipping) a repo, update `scan-log.json` in 
 
 Create the file if it doesn't exist. This enables incremental runs — future scans will know this repo has already been processed.
 
-### 9. Repeat
+### 10. Repeat
 
-If multiple repository paths were provided, repeat steps 1-8 for each one. Report a summary at the end showing which repos were retrofitted, any that were skipped, and note that evaluation reports are available in `working-data/reports/`.
+If multiple repository paths were provided, repeat steps 1-9 for each one. Report a summary at the end showing which repos were retrofitted, any that were skipped, and note that evaluation reports are available in `working-data/reports/`.

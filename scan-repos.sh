@@ -21,8 +21,11 @@ fi
 
 mkdir -p "$REPORT_DIR"
 
+# Watermark string left by the retrofit agent in target READMEs
+WATERMARK_PATTERN="Repository evaluated by retrofit agent on"
+
 # CSV header
-echo "repo,visibility,has_claude_md,has_commands,has_agents,status" > "$CSV_FILE"
+echo "repo,visibility,has_claude_md,has_commands,has_agents,previously_retrofitted,status" > "$CSV_FILE"
 
 # Arrays for categorization
 missing_claude_md=()
@@ -30,6 +33,7 @@ missing_commands=()
 missing_agents=()
 missing_all=()
 has_all=()
+previously_retrofitted=()
 public_repos=()
 private_repos=()
 unknown_vis=()
@@ -59,16 +63,28 @@ for dir in "$REPOS_BASE"/*/; do
   has_cm=false
   has_cmd=false
   has_agt=false
+  has_watermark=false
 
   [ -f "${dir}CLAUDE.md" ] && has_cm=true
   [ -d "${dir}.claude/commands" ] && [ "$(ls -A "${dir}.claude/commands" 2>/dev/null)" ] && has_cmd=true
   [ -d "${dir}.claude/agents" ] && [ "$(ls -A "${dir}.claude/agents" 2>/dev/null)" ] && has_agt=true
 
+  # Check for retrofit watermark in README
+  for readme in "${dir}"README.md "${dir}"readme.md "${dir}"README "${dir}"README.rst; do
+    if [ -f "$readme" ] && grep -q "$WATERMARK_PATTERN" "$readme" 2>/dev/null; then
+      has_watermark=true
+      break
+    fi
+  done
+
+  if $has_watermark; then previously_retrofitted+=("$repo_name"); fi
   if ! $has_cm; then missing_claude_md+=("$repo_name"); fi
   if ! $has_cmd; then missing_commands+=("$repo_name"); fi
   if ! $has_agt; then missing_agents+=("$repo_name"); fi
 
-  if ! $has_cm && ! $has_cmd && ! $has_agt; then
+  if $has_watermark; then
+    status="previously_retrofitted"
+  elif ! $has_cm && ! $has_cmd && ! $has_agt; then
     missing_all+=("$repo_name")
     status="missing_all"
   elif $has_cm && $has_cmd && $has_agt; then
@@ -79,7 +95,7 @@ for dir in "$REPOS_BASE"/*/; do
   fi
 
   # Write CSV row
-  echo "${repo_name},${visibility},${has_cm},${has_cmd},${has_agt},${status}" >> "$CSV_FILE"
+  echo "${repo_name},${visibility},${has_cm},${has_cmd},${has_agt},${has_watermark},${status}" >> "$CSV_FILE"
 done
 
 # Write individual lists
@@ -115,7 +131,8 @@ cat > "$REPORT_DIR/summary.md" <<EOF
 
 **Missing all elements**: ${#missing_all[@]}
 **Fully scaffolded**: ${#has_all[@]}
-**Partially scaffolded**: $((repo_count - ${#missing_all[@]} - ${#has_all[@]}))
+**Partially scaffolded**: $((repo_count - ${#missing_all[@]} - ${#has_all[@]} - ${#previously_retrofitted[@]}))
+**Previously retrofitted** (watermark found): ${#previously_retrofitted[@]}
 
 ## Repos Missing All Elements
 
@@ -124,6 +141,10 @@ $(printf -- '- %s\n' "${missing_all[@]}" 2>/dev/null || echo "_None_")
 ## Fully Scaffolded Repos
 
 $(printf -- '- %s\n' "${has_all[@]}" 2>/dev/null || echo "_None_")
+
+## Previously Retrofitted (watermark detected)
+
+$(printf -- '- %s\n' "${previously_retrofitted[@]}" 2>/dev/null || echo "_None_")
 EOF
 
 echo "Scan complete. ${repo_count} repos scanned."
@@ -136,6 +157,7 @@ echo ""
 echo "  Missing CLAUDE.md:        ${#missing_claude_md[@]}"
 echo "  Missing slash commands:   ${#missing_commands[@]}"
 echo "  Missing agents:           ${#missing_agents[@]}"
+echo "  Previously retrofitted:   ${#previously_retrofitted[@]}"
 echo "  Missing all elements:     ${#missing_all[@]}"
 echo "  Fully scaffolded:         ${#has_all[@]}"
 echo ""

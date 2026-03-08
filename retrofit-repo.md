@@ -97,6 +97,18 @@ Save a per-repo evaluation report to `working-data/reports/<repo-name>.md` in th
 
 This report is for the user's future reference and is NOT committed to the target repo.
 
+### 8. Append Retrofit Watermark
+
+After all scaffolding is complete, append a watermark line to the bottom of the target repository's README (usually `README.md`). This allows future scans to detect that the repo has already been processed, even on a different machine.
+
+Append this line (with a blank line before it):
+
+```
+*Repository evaluated by retrofit agent on YYYY-MM-DD*
+```
+
+Replace `YYYY-MM-DD` with the current date. If no README file exists, skip this step.
+
 ## Commit
 
 After adding all scaffolding:

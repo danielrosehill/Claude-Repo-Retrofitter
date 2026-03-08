@@ -21,6 +21,7 @@ The user will provide the base path containing their repositories. For example: 
    - Repos missing all elements (best candidates for a full retrofit)
    - Repos partially scaffolded (may need selective updates)
    - Repos already fully scaffolded (no action needed)
+   - Repos previously retrofitted (watermark detected in README) — these were processed by the retrofit agent and can be skipped
    - Repos already visited in previous runs (from `scan-log.json`) — show these separately so the user knows they can be skipped
 
 4. Ask the user which repos they would like to retrofit. They can choose:

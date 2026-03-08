@@ -12,7 +12,11 @@ The user may provide the base path containing their repositories. For example: $
 
 ### 1. Skip Already-Visited Repos
 
-Check `scan-log.json` for an entry matching the repo name. If it exists and has `"status"` of `"retrofitted"`, `"skipped"`, or `"not_suitable"`, skip it silently. Only re-process repos with status `"error"` or repos not in the log at all.
+Check two signals:
+1. `scan-log.json` — if an entry exists with `"status"` of `"retrofitted"`, `"skipped"`, or `"not_suitable"`, skip silently.
+2. **README watermark** — if the repo's README contains the line `*Repository evaluated by retrofit agent on ...*`, skip it. This catches repos retrofitted on a different machine that aren't in the local scan-log.
+
+Only re-process repos with status `"error"` or repos not in the log and without a watermark.
 
 ### 2. Suitability Evaluation
 
