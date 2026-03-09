@@ -97,9 +97,25 @@ If subagents ARE appropriate, create `.claude/agents/` (if it doesn't exist) and
 | App + Infrastructure | `app.md`, `infra.md` |
 | Core + Plugins | `core.md`, `plugins.md` |
 
+**Workflow parallelization** — Design agents with parallel execution in mind:
+- If the repo has workflows where multiple agents could work independently (e.g., frontend tests and backend tests, linting separate packages), note this in the agent definitions so the orchestrating agent knows to spawn them concurrently.
+- Each agent should document which other agents it can run alongside without conflicts.
+- Consider creating agents specifically to enable parallelism — e.g., if a monorepo has 3 independent packages, create per-package agents so they can be launched in parallel rather than one sequential agent doing all three.
+- Include a "Parallelism notes" section in each agent file stating what this agent can run concurrently with.
+
 **Naming convention:** Use lowercase kebab-case for filenames (e.g. `api-service.md`, `data-pipeline.md`).
 
 **Keep agent count low.** 2–3 agents is typical. More than 4 is almost always too many.
+
+### Reviewing Existing Agents
+
+If `.claude/agents/` already has agents, don't just skip them — **review and optimize**:
+- Read each existing agent file and evaluate its quality and scope
+- Check whether agents could be restructured to enable better workflow parallelism
+- Look for agents with overlapping scopes that should be consolidated
+- Identify missing agents that would fill gaps or enable parallel workflows
+- Verify that agent definitions reference correct paths and conventions
+- Report what was reviewed, what was improved, and what was added
 
 ---
 

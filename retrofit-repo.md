@@ -53,10 +53,15 @@ Create `.claude/commands/` with markdown files appropriate for the repo type:
 - Analyze the repo's purpose, language, and structure
 - Create 2-4 relevant slash commands (e.g., `/review`, `/test`, `/deploy`, `/docs`)
 - Each command file should contain clear instructions for the agent
+- **Parallelization:** Actively look for workflows with independent steps that the command can instruct the agent to run concurrently (e.g., lint + test + type-check in parallel, validating multiple packages simultaneously, spawning parallel subagents for independent subsystems)
+- If the repo already has commands, review and optimize them — check for missed parallelization opportunities, overly generic instructions, incorrect references, and workflow gaps
 
 ### 4. Subagents
 
 If the repository would benefit from specialized agents, create `.claude/agents/` with markdown files defining them. Not every repo needs subagents — only add them when there's a clear use case (e.g., a monorepo with distinct subsystems, a project with separate frontend/backend concerns).
+
+- **Parallelization:** Design agents to enable concurrent execution — if the repo has independent subsystems, create per-subsystem agents so they can be launched in parallel. Each agent should document what it can run concurrently with.
+- If the repo already has agents, review and optimize them — check for missed parallelism opportunities, overlapping scopes, and incorrect references.
 
 ### 5. MCP Server Recommendations
 

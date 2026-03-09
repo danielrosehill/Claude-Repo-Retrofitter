@@ -66,7 +66,23 @@ Create `.claude/commands/` (if it doesn't exist) and add 2–4 markdown command 
 - Reference to relevant files, configs, or conventions
 - Use `$ARGUMENTS` where the user might pass parameters
 
+**Workflow parallelization** — Actively look for opportunities to design commands that exploit parallel execution:
+- If a workflow has independent steps (e.g., lint + test + type-check), the command should instruct the agent to run them in parallel using concurrent tool calls or the Agent tool.
+- If a command orchestrates work across multiple files or subsystems, design it to spawn parallel subagents for independent parts.
+- Common parallelizable patterns: running tests across multiple packages, checking multiple services, validating independent concerns (types, lint, tests), building multiple targets.
+- Include explicit `Launch these steps in parallel:` sections in the command file where appropriate.
+
 **Do NOT create generic filler commands.** Every command should do something genuinely useful for this specific project. If only 2 commands make sense, create 2.
+
+### Reviewing Existing Commands
+
+If `.claude/commands/` already has commands, don't just skip them — **review and optimize**:
+- Read each existing command file and evaluate its quality
+- Check for missed parallelization opportunities (sequential steps that could run concurrently)
+- Look for commands that are too generic and could be more tailored to the repo
+- Identify missing commands that would fill workflow gaps
+- Fix any commands that reference incorrect paths, tools, or conventions
+- Report what was reviewed, what was improved, and what was added
 
 ---
 

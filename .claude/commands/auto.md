@@ -13,17 +13,17 @@ The user may provide the base path containing their repositories. For example: $
 ### 1. Skip Already-Visited Repos
 
 Check two signals:
-1. `scan-log.json` — if an entry exists with `"status"` of `"retrofitted"`, `"skipped"`, or `"not_suitable"`, skip silently.
-2. **README watermark** — if the repo's README contains the line `*Repository evaluated by retrofit agent on ...*`, skip it. This catches repos retrofitted on a different machine that aren't in the local scan-log.
+1. `scan-log.json` — if an entry exists with `"status"` of `"skipped"` or `"not_suitable"`, skip silently. If status is `"retrofitted"`, proceed in **review and optimize mode** to check for improvements.
+2. **README watermark** — if the repo's README contains the line `*Repository evaluated by retrofit agent on ...*` but has no scan-log entry, add it in review mode rather than skipping.
 
-Only re-process repos with status `"error"` or repos not in the log and without a watermark.
+Re-process repos with status `"error"`, `"retrofitted"` (for review), or repos not in the log.
 
 ### 2. Suitability Evaluation
 
 Before retrofitting, evaluate whether the repo is a good candidate for agent scaffolding. Read the repo's README, look at its file structure, and consider:
 
 - **Is it a real project?** Skip repos that are just forks with no local changes, empty/abandoned repos with no meaningful content, template repos, or mirror-only repos.
-- **Is it already fully scaffolded?** If it has CLAUDE.md, `.claude/commands/`, and `.claude/agents/` already populated, log it as `"already_complete"` and skip.
+- **Is it already scaffolded?** If it has CLAUDE.md, `.claude/commands/`, and `.claude/agents/` already populated, switch to **review and optimize mode** — review existing commands and agents for missed parallelization opportunities, overly generic instructions, incorrect references, and workflow gaps. Improve what's there rather than skipping. Log as `"reviewed_and_optimized"` if changes were made, or `"already_optimized"` if no improvements were needed.
 - **Would scaffolding add value?** Very small repos (single-file scripts, dotfile collections, pure documentation repos with no code) may not benefit from full scaffolding. Use judgment — if the repo has any meaningful code, it's worth scaffolding.
 
 If the repo is NOT suitable, log it in `scan-log.json` with status `"not_suitable"` and a brief reason, then move on.
@@ -51,7 +51,7 @@ If any error occurs during retrofit, log the repo with status `"error"` and the 
   "repos_base_path": "/home/user/repos/github",
   "repos": {
     "repo-name": {
-      "status": "retrofitted|skipped|not_suitable|error|already_complete",
+      "status": "retrofitted|skipped|not_suitable|error|already_optimized|reviewed_and_optimized",
       "reason": "optional reason for skip/not_suitable/error",
       "timestamp": "2026-03-08T12:00:00Z",
       "visibility": "public|private|unknown"

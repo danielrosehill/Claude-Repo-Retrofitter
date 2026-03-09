@@ -42,7 +42,7 @@ gh repo view --json isPrivate --jq '.isPrivate'
     ```
   - The scaffold folders (`context-data/`, `planning/`, `pm/`, `from-ai/`, `user-docs/`) can still be committed as they are general-purpose.
 
-### 5. Add Scaffolding
+### 5. Add or Review Scaffolding
 
 Read and follow the instructions in `retrofit-repo.md` from this repository's root. Apply them to the **target repository**, not to this template repository. This includes:
 
@@ -52,6 +52,13 @@ Read and follow the instructions in `retrofit-repo.md` from this repository's ro
 - Subagents (if appropriate)
 - MCP server recommendations
 - Custom admin MCP evaluation
+
+**If the repo already has scaffolding**, switch to **review and optimize mode** — don't skip or overwrite. Instead:
+- Review existing CLAUDE.md/AGENTS.md for missing sections or outdated info
+- Review existing slash commands for missed parallelization opportunities, generic instructions, incorrect references, and workflow gaps
+- Review existing agents for parallelism improvements and overlapping scopes
+- Add any missing scaffolding components
+- Report what was reviewed, improved, and added
 
 ### 6. Save Evaluation Report
 

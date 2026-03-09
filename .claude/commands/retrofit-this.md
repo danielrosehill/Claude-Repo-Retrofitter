@@ -33,7 +33,24 @@ Existing scaffolding: <what's already present, or "None">
 Recommendation: <retrofit / already complete / not suitable>
 ```
 
-If not suitable, explain why and stop. If already complete, note what's present and ask if the user wants to re-scaffold or stop. Otherwise, proceed.
+If not suitable, explain why and stop. If already complete, switch to **review and optimize mode** (see below) rather than re-scaffolding from scratch. Otherwise, proceed.
+
+### Review and Optimize Mode
+
+When the repo already has scaffolding (CLAUDE.md, commands, agents, etc.), don't skip or overwrite — instead review and improve the existing implementation:
+
+1. **CLAUDE.md / AGENTS.md** — Read and check for missing sections, outdated info, or inaccuracies. Fill gaps without overwriting good content.
+2. **Slash commands** — Review each existing command for:
+   - Missed parallelization opportunities (sequential steps that could run concurrently)
+   - Overly generic instructions that should be tailored to the repo
+   - Incorrect file paths, tool references, or conventions
+   - Missing commands that would fill workflow gaps
+3. **Subagents** — Review each existing agent for:
+   - Opportunities to restructure for better parallel execution
+   - Overlapping scopes that should be consolidated
+   - Missing agents that would enable parallel workflows
+   - Incorrect or outdated scope definitions
+4. **Report** what was reviewed, what was changed, and what was added.
 
 ---
 
@@ -99,12 +116,20 @@ Create `.claude/commands/` with 2–4 markdown files appropriate for the repo's 
 
 Tailor them to the actual project. Each file should contain clear instructions for the agent.
 
+**Parallelization:** Design commands that exploit parallel execution where possible. If a workflow has independent steps (lint + test + type-check, validating multiple packages, checking multiple services), the command should instruct the agent to run them concurrently using parallel tool calls or spawning parallel subagents.
+
+If commands already exist, review and optimize them rather than skipping — check for missed parallelization, generic instructions, and workflow gaps.
+
 ### 4d. Subagents
 
 Only create `.claude/agents/` if there's a clear use case:
 - Monorepo with distinct subsystems
 - Separate frontend/backend concerns
 - Complex CI/CD or infrastructure alongside application code
+
+Design agents to enable parallel execution — if the repo has independent subsystems, create per-subsystem agents so they can be launched concurrently. Each agent should document what it can run in parallel with.
+
+If agents already exist, review and optimize them rather than skipping — check for missed parallelism opportunities and overlapping scopes.
 
 Most repos do NOT need subagents. Skip this if unsure.
 

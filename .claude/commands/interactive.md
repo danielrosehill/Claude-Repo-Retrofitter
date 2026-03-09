@@ -17,17 +17,17 @@ For each git repository under the base path, perform evaluation silently (do not
 ### 1. Skip Already-Visited Repos
 
 Check two signals:
-1. `scan-log.json` — if an entry exists with `"status"` of `"retrofitted"`, `"skipped"`, or `"not_suitable"`, skip silently.
-2. **README watermark** — if the repo's README contains the line `*Repository evaluated by retrofit agent on ...*`, skip it.
+1. `scan-log.json` — if an entry exists with `"status"` of `"skipped"` or `"not_suitable"`, skip silently. If status is `"retrofitted"`, include as a review candidate.
+2. **README watermark** — if the repo's README contains the watermark but has no scan-log entry, include as a review candidate.
 
-Only evaluate repos with status `"error"` or repos not in the log and without a watermark.
+Evaluate repos with status `"error"`, `"retrofitted"` (for review), or repos not in the log.
 
 ### 2. Suitability Evaluation
 
 For each candidate repo, read the README, examine the file structure, and assess:
 
 - **Is it a real project?** Skip forks with no local changes, empty/abandoned repos, templates, mirrors.
-- **Is it already fully scaffolded?** If it has CLAUDE.md, `.claude/commands/`, and `.claude/agents/` already populated, record as `"already_complete"`.
+- **Is it already scaffolded?** If it has CLAUDE.md, `.claude/commands/`, and `.claude/agents/` already populated, record as `"review_candidate"` — these repos can still benefit from review and optimization (parallelization improvements, quality fixes, gap filling).
 - **Would scaffolding add value?** Very small repos (single-file scripts, dotfile collections, pure docs) may not benefit.
 
 ### 3. Record Evaluation Data
@@ -67,17 +67,17 @@ Not suitable: repo-c (reason), repo-d (reason), ...
 
 ## Phase 2: User Review
 
-Present each candidate repo (those with recommendation `"retrofit"`) to the user **one by one** for approval.
+Present each candidate repo (those with recommendation `"retrofit"` or `"review"`) to the user **one by one** for approval.
 
 For each repo, show:
 
 ```
 [N/M] repo-name (visibility | tech stack summary)
-  Recommendation: retrofit
+  Recommendation: retrofit / review & optimize
   Reason: <brief reason>
-  Missing: CLAUDE.md, commands, agents  (or whichever are missing)
+  Missing/Issues: CLAUDE.md, commands, agents  (or what needs review/improvement)
 
-  Retrofit this repo? [y/n/q]
+  Retrofit/review this repo? [y/n/q]
 ```
 
 - **y** — mark for retrofit
@@ -122,7 +122,7 @@ Then spawn **parallel worker agents** for each approved repo. Each worker:
 
 1. Runs `git pull` in the target repo.
 2. Applies visibility handling based on the decided action.
-3. Follows the full scaffolding process in `retrofit-repo.md` (guidance files, scaffold folders, slash commands, subagents, MCP evaluation).
+3. Follows the full scaffolding process in `retrofit-repo.md` (guidance files, scaffold folders, slash commands, subagents, MCP evaluation). For repos in review mode, focuses on reviewing and optimizing existing scaffolding — checking for parallelization opportunities, quality improvements, and workflow gaps.
 4. Saves the evaluation report to `working-data/reports/<repo-name>.md`.
 5. Commits with message: `Add AI agent scaffolding (retrofitted)`
 6. Pushes to remote.
@@ -141,7 +141,8 @@ If any worker encounters an error, log the repo with status `"error"` and contin
    - Approved but errored → status `"error"` with error message
    - User skipped → status `"skipped"` with reason `"user_skipped_interactive"`
    - Not suitable → status `"not_suitable"` with reason
-   - Already complete → status `"already_complete"`
+   - Reviewed and optimized → status `"reviewed_and_optimized"`
+   - Reviewed, no changes needed → status `"already_optimized"`
 
 2. Update `scan-log.json` with `last_run` timestamp.
 
@@ -166,7 +167,7 @@ If any worker encounters an error, log the repo with status `"error"` and contin
   "repos_base_path": "/home/user/repos/github",
   "repos": {
     "repo-name": {
-      "status": "retrofitted|skipped|not_suitable|error|already_complete",
+      "status": "retrofitted|skipped|not_suitable|error|already_optimized|reviewed_and_optimized",
       "reason": "optional reason for skip/not_suitable/error",
       "timestamp": "2026-03-08T12:00:00Z",
       "visibility": "public|private|unknown"
