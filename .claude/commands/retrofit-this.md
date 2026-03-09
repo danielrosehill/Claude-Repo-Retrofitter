@@ -1,14 +1,6 @@
-Retrofit the current repository with AI agent scaffolding — a single, self-contained workflow that scans, evaluates, scaffolds, and pushes.
+Retrofit the current repository with AI agent scaffolding — a single, self-contained workflow that evaluates, scaffolds, commits, and pushes.
 
 Optional arguments (e.g. visibility preference): $ARGUMENTS
-
----
-
-## Step 0: Locate the Retrofitter Workspace
-
-The Retrofitter repository lives at `~/repos/github/Claude-Repo-Retrofitter`. Read its `config.json` and `scan-log.json` for stored preferences and history. If neither exists, proceed with defaults.
-
-Record the **current working directory** as the target repository path. All scaffolding work happens here.
 
 ---
 
@@ -18,7 +10,6 @@ Record the **current working directory** as the target repository path. All scaf
 2. Run `git pull` to ensure the working tree is up to date.
 3. Check whether this repo has already been retrofitted:
    - Look for the watermark `*Repository evaluated by retrofit agent on ...*` in the README.
-   - Check `scan-log.json` (in the Retrofitter repo) for an entry matching this repo name with status `"retrofitted"` or `"already_complete"`.
    - If found, inform the user and ask whether to proceed anyway or abort.
 
 ---
@@ -55,11 +46,9 @@ gh repo view --json isPrivate --jq '.isPrivate'
 ```
 
 - **Private**: All files can be committed.
-- **Public**: Check `default_visibility_action` in the Retrofitter's `config.json`.
-  - `"open_source"` → commit all agent files.
-  - `"gitignore"` → add agent files to `.gitignore`.
-  - Empty or not set → ask the user whether to open-source agent files or gitignore them. Offer to remember the choice.
-  - If the user declines open-sourcing, add to `.gitignore`:
+- **Public**: Ask the user whether they want agent-specific files (`.claude/`, `CLAUDE.md`, `AGENTS.md`) committed and open-sourced.
+  - If the user **approves**, commit everything.
+  - If the user **declines**, add to `.gitignore`:
     ```
     # AI agent files (kept local for this public repo)
     .claude/
@@ -144,20 +133,7 @@ If recommended, describe 2–4 key tools/resources it would expose.
 
 ---
 
-## Step 7: Save Evaluation Report
-
-Save a per-repo evaluation report to `~/repos/github/Claude-Repo-Retrofitter/working-data/reports/<repo-name>.md`. Create the directory if needed. Include:
-
-- Repository name and path
-- Date of evaluation
-- Summary of scaffolding added
-- MCP server recommendations (with rationale)
-- Custom admin MCP assessment
-- Any other observations about agent-readiness
-
----
-
-## Step 8: Append Retrofit Watermark
+## Step 7: Append Retrofit Watermark
 
 Append to the bottom of the target repo's README (e.g. `README.md`), with a blank line before it:
 
@@ -169,7 +145,7 @@ Use the current date. If no README exists, skip this step.
 
 ---
 
-## Step 9: Commit and Push
+## Step 8: Commit and Push
 
 1. Stage all new files (respect `.gitignore` decisions from Step 3).
 2. Commit with the message: `Add AI agent scaffolding (retrofitted)`
@@ -177,30 +153,12 @@ Use the current date. If no README exists, skip this step.
 
 ---
 
-## Step 10: Update Scan Log
-
-Update `~/repos/github/Claude-Repo-Retrofitter/scan-log.json` with an entry for this repo:
-
-```json
-{
-  "<repo-name>": {
-    "status": "retrofitted",
-    "timestamp": "<ISO 8601>",
-    "visibility": "public|private|unknown"
-  }
-}
-```
-
-Create the file if it doesn't exist.
-
----
-
-## Step 11: Summary
+## Step 9: Summary
 
 Print a final summary:
 
 ```
-✓ Retrofit complete: <repo-name>
+Retrofit complete: <repo-name>
 
 Scaffolding added:
   - CLAUDE.md
@@ -211,6 +169,4 @@ Scaffolding added:
 
 MCP recommendations: (summary or "None")
 Custom admin MCP: (recommended / not recommended)
-
-Evaluation report saved to: ~/repos/github/Claude-Repo-Retrofitter/working-data/reports/<repo-name>.md
 ```
