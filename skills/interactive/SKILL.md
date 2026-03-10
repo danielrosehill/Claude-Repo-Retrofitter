@@ -1,11 +1,16 @@
+---
+name: interactive
+description: Scan, evaluate, and present repositories for user-approved retrofitting with parallel execution
+---
+
 Scan, evaluate, and present repositories for user-approved retrofitting — then execute approved retrofits in parallel.
 
 The user may provide the base path containing their repositories. For example: $ARGUMENTS
 
 ## Before Starting
 
-1. Read `config.json` in this repository's root. If `repos_base_path` is set and the user didn't provide a path, use that stored path.
-2. Read `scan-log.json` in this repository's root. This tracks which repos have already been visited. If it doesn't exist, create it with an empty `repos` object.
+1. Look for a `config.json` in the current working directory. If `repos_base_path` is set and the user didn't provide a path, use that stored path.
+2. Look for a `scan-log.json` in the current working directory. This tracks which repos have already been visited. If it doesn't exist, create it with an empty `repos` object.
 3. If this is the first run and `repos_base_path` is empty in `config.json`, save the provided path there.
 
 ---
@@ -27,34 +32,12 @@ Evaluate repos with status `"error"`, `"retrofitted"` (for review), or repos not
 For each candidate repo, read the README, examine the file structure, and assess:
 
 - **Is it a real project?** Skip forks with no local changes, empty/abandoned repos, templates, mirrors.
-- **Is it already scaffolded?** If it has CLAUDE.md, `.claude/commands/`, and `.claude/agents/` already populated, record as `"review_candidate"` — these repos can still benefit from review and optimization (parallelization improvements, quality fixes, gap filling).
+- **Is it already scaffolded?** If it has CLAUDE.md, `.claude/commands/`, and `.claude/agents/` already populated, record as `"review_candidate"` — these repos can still benefit from review and optimization.
 - **Would scaffolding add value?** Very small repos (single-file scripts, dotfile collections, pure docs) may not benefit.
 
-### 3. Record Evaluation Data
+### 3. Show Scan Summary
 
-For each evaluated repo, record in a working data structure:
-
-```json
-{
-  "repo_name": "example-repo",
-  "path": "/home/user/repos/github/example-repo",
-  "visibility": "public|private|unknown",
-  "recommendation": "retrofit|not_suitable|already_complete",
-  "reason": "Brief explanation of recommendation",
-  "existing_scaffolding": {
-    "has_claude_md": false,
-    "has_commands": false,
-    "has_agents": false
-  },
-  "tech_stack": "Brief tech stack summary"
-}
-```
-
-Save this data to `working-data/interactive-<timestamp>.json`.
-
-### 4. Show Scan Summary
-
-After all repos are evaluated, print a summary table:
+After all repos are evaluated, print a summary:
 
 ```
 Scan complete: X repos found, Y candidates, Z skipped (already visited), W not suitable
@@ -67,7 +50,7 @@ Not suitable: repo-c (reason), repo-d (reason), ...
 
 ## Phase 2: User Review
 
-Present each candidate repo (those with recommendation `"retrofit"` or `"review"`) to the user **one by one** for approval.
+Present each candidate repo to the user **one by one** for approval.
 
 For each repo, show:
 
@@ -88,14 +71,6 @@ Also offer batch shortcuts before starting the one-by-one review:
 - **"all"** — approve all candidates
 - **"none"** — skip all (end session)
 - **"review"** — proceed with one-by-one review (default)
-
-Record the user's decision for each repo. Save decisions to the same `working-data/interactive-<timestamp>.json` file, updating each entry with:
-
-```json
-{
-  "user_decision": "approved|skipped|quit_remaining"
-}
-```
 
 After review, show a confirmation summary:
 
@@ -122,11 +97,10 @@ Then spawn **parallel worker agents** for each approved repo. Each worker:
 
 1. Runs `git pull` in the target repo.
 2. Applies visibility handling based on the decided action.
-3. Follows the full scaffolding process in `retrofit-repo.md` (guidance files, scaffold folders, slash commands, subagents, MCP evaluation). For repos in review mode, focuses on reviewing and optimizing existing scaffolding — checking for parallelization opportunities, quality improvements, and workflow gaps.
-4. Saves the evaluation report to `working-data/reports/<repo-name>.md`.
-5. Commits with message: `Add AI agent scaffolding (retrofitted)`
-6. Pushes to remote.
-7. Returns success or error status.
+3. Applies the full scaffolding process: guidance files (CLAUDE.md, AGENTS.md), scaffold folders, slash commands (2-4, tailored and parallelization-aware), subagents (if architecturally justified), MCP evaluation. For repos in review mode, focuses on reviewing and optimizing existing scaffolding.
+4. Commits with message: `Add AI agent scaffolding (retrofitted)`
+5. Pushes to remote.
+6. Returns success or error status.
 
 **Worker parallelism:** Launch workers using the Agent tool. Spawn up to 5 workers concurrently. As workers complete, launch the next batch until all approved repos are processed.
 
@@ -154,8 +128,6 @@ If any worker encounters an error, log the repo with status `"error"` and contin
    - Skipped by user
    - Not suitable
    - Errors (list repo names and brief error)
-
-4. Note that evaluation reports are in `working-data/reports/`.
 
 ---
 

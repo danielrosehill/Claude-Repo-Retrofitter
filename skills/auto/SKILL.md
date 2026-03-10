@@ -1,11 +1,16 @@
+---
+name: auto
+description: Autonomously scan, evaluate, and retrofit repositories — no user interaction required
+---
+
 Autonomously scan, evaluate, and retrofit repositories with AI agent scaffolding — no user interaction required.
 
 The user may provide the base path containing their repositories. For example: $ARGUMENTS
 
 ## Before Starting
 
-1. Read `config.json` in this repository's root. If `repos_base_path` is set and the user didn't provide a path, use that stored path.
-2. Read `scan-log.json` in this repository's root. This tracks which repos have already been visited. If it doesn't exist, create it with an empty `repos` object.
+1. Look for a `config.json` in the current working directory. If `repos_base_path` is set and the user didn't provide a path, use that stored path.
+2. Look for a `scan-log.json` in the current working directory. This tracks which repos have already been visited. If it doesn't exist, create it with an empty `repos` object.
 3. If this is the first run and `repos_base_path` is empty in `config.json`, save the provided path there.
 
 ## For each git repository under the base path:
@@ -35,11 +40,10 @@ If the repo IS suitable:
 1. Run `git pull` in the target repo.
 2. Determine visibility (`gh repo view --json isPrivate --jq '.isPrivate'`).
 3. For public repos, use `default_visibility_action` from `config.json`. If not set, default to `"open_source"` in autonomous mode (since there's no user to ask).
-4. Follow the full scaffolding process in `retrofit-repo.md` (guidance files, scaffold folders, slash commands, subagents, MCP evaluation).
-5. Save the evaluation report to `working-data/reports/<repo-name>.md`.
-6. Commit with message: `Add AI agent scaffolding (retrofitted)`
-7. Push to remote.
-8. Log in `scan-log.json` with status `"retrofitted"`.
+4. Apply the full scaffolding process: guidance files (CLAUDE.md, AGENTS.md), scaffold folders, slash commands (2-4, tailored and parallelization-aware), subagents (if architecturally justified), MCP evaluation.
+5. Commit with message: `Add AI agent scaffolding (retrofitted)`
+6. Push to remote.
+7. Log in `scan-log.json` with status `"retrofitted"`.
 
 If any error occurs during retrofit, log the repo with status `"error"` and the error message, then continue to the next repo.
 
@@ -69,4 +73,3 @@ If any error occurs during retrofit, log the repo with status `"error"` and the 
    - Skipped (already visited)
    - Not suitable (with reasons)
    - Errors
-3. Note that evaluation reports are in `working-data/reports/`.

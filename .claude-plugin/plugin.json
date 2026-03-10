@@ -1,0 +1,19 @@
+{
+  "name": "repo-retrofitter",
+  "version": "1.0.0",
+  "description": "Bulk-retrofit repositories with AI agent scaffolding (CLAUDE.md, slash commands, subagents, and more)",
+  "author": {
+    "name": "Daniel Rosehill",
+    "url": "https://github.com/danielrosehill"
+  },
+  "repository": "https://github.com/danielrosehill/Claude-Repo-Retrofitter",
+  "license": "MIT",
+  "keywords": [
+    "retrofitting",
+    "scaffolding",
+    "agents",
+    "claude-code",
+    "batch",
+    "automation"
+  ]
+}

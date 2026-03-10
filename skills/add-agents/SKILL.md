@@ -1,3 +1,8 @@
+---
+name: add-agents
+description: Evaluate the current repository and generate Claude Code subagents
+---
+
 Evaluate the current repository and generate Claude Code subagents (`.claude/agents/`) tailored to its architecture and workflows.
 
 Optional arguments (e.g. specific agent roles to create): $ARGUMENTS
@@ -98,10 +103,9 @@ If subagents ARE appropriate, create `.claude/agents/` (if it doesn't exist) and
 | Core + Plugins | `core.md`, `plugins.md` |
 
 **Workflow parallelization** — Design agents with parallel execution in mind:
-- If the repo has workflows where multiple agents could work independently (e.g., frontend tests and backend tests, linting separate packages), note this in the agent definitions so the orchestrating agent knows to spawn them concurrently.
+- If the repo has workflows where multiple agents could work independently, note this in the agent definitions so the orchestrating agent knows to spawn them concurrently.
 - Each agent should document which other agents it can run alongside without conflicts.
-- Consider creating agents specifically to enable parallelism — e.g., if a monorepo has 3 independent packages, create per-package agents so they can be launched in parallel rather than one sequential agent doing all three.
-- Include a "Parallelism notes" section in each agent file stating what this agent can run concurrently with.
+- Include a "Parallelism notes" section in each agent file.
 
 **Naming convention:** Use lowercase kebab-case for filenames (e.g. `api-service.md`, `data-pipeline.md`).
 

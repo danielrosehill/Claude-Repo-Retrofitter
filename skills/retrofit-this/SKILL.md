@@ -1,3 +1,8 @@
+---
+name: retrofit-this
+description: Retrofit the current repository with AI agent scaffolding — single-repo workflow
+---
+
 Retrofit the current repository with AI agent scaffolding — a single, self-contained workflow that evaluates, scaffolds, commits, and pushes.
 
 Optional arguments (e.g. visibility preference): $ARGUMENTS
@@ -108,28 +113,15 @@ Create these directories with `.gitkeep` files (skip any that already exist or h
 
 ### 4c. Slash Commands
 
-Create `.claude/commands/` with 2–4 markdown files appropriate for the repo's type, language, and purpose. Examples:
-- `/review` — code review guidance
-- `/test` — run and analyze tests
-- `/deploy` — deployment workflow
-- `/docs` — generate or update documentation
+Create `.claude/commands/` with 2–4 markdown files appropriate for the repo's type, language, and purpose. Tailor them to the actual project.
 
-Tailor them to the actual project. Each file should contain clear instructions for the agent.
+**Parallelization:** Design commands that exploit parallel execution where possible. If a workflow has independent steps, the command should instruct the agent to run them concurrently.
 
-**Parallelization:** Design commands that exploit parallel execution where possible. If a workflow has independent steps (lint + test + type-check, validating multiple packages, checking multiple services), the command should instruct the agent to run them concurrently using parallel tool calls or spawning parallel subagents.
-
-If commands already exist, review and optimize them rather than skipping — check for missed parallelization, generic instructions, and workflow gaps.
+If commands already exist, review and optimize them rather than skipping.
 
 ### 4d. Subagents
 
-Only create `.claude/agents/` if there's a clear use case:
-- Monorepo with distinct subsystems
-- Separate frontend/backend concerns
-- Complex CI/CD or infrastructure alongside application code
-
-Design agents to enable parallel execution — if the repo has independent subsystems, create per-subsystem agents so they can be launched concurrently. Each agent should document what it can run in parallel with.
-
-If agents already exist, review and optimize them rather than skipping — check for missed parallelism opportunities and overlapping scopes.
+Only create `.claude/agents/` if there's a clear use case. Design agents to enable parallel execution.
 
 Most repos do NOT need subagents. Skip this if unsure.
 
@@ -137,24 +129,13 @@ Most repos do NOT need subagents. Skip this if unsure.
 
 ## Step 5: MCP Server Recommendations
 
-Evaluate the repo and recommend existing public MCP servers that would be useful. Consider:
-- The tech stack (databases, cloud providers, APIs)
-- External service integrations
-- The project's domain
-
-Don't force recommendations. If nothing clearly fits, say so.
+Evaluate the repo and recommend existing public MCP servers that would be useful. Don't force recommendations — if nothing clearly fits, say so.
 
 ---
 
 ## Step 6: Custom Admin MCP Evaluation
 
-Separately evaluate whether a lightweight custom MCP server would benefit this project.
-
-**Good candidates**: Repos with repetitive operational tasks, project-specific queries, or resource management not covered by existing MCPs.
-
-**Not good candidates**: Simple libraries, static sites, or repos where existing MCPs suffice.
-
-If recommended, describe 2–4 key tools/resources it would expose.
+Evaluate whether a lightweight custom MCP server would benefit this project. If recommended, describe 2–4 key tools it would expose.
 
 ---
 
